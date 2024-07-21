@@ -20,7 +20,7 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackages = "org.mediasoft.warehouse.db",
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager")
-public class ProductsConfiguration {
+public class ProductConfiguration {
 
     @Value("${spring.datasource.url}")
     private String url;

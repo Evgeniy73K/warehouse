@@ -1,22 +1,20 @@
-package org.mediasoft.warehouse.dto;
+package org.mediasoft.warehouse.service.dto;
+
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-@Builder
-public class ResponseProductDto {
+public class UpdateProductDto {
     private String name;
+    private UUID id;
     private UUID article;
     private String category;
+    private String dictionary;
     private BigDecimal price;
     private BigDecimal qty;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

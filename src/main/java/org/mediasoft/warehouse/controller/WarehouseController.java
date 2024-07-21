@@ -1,16 +1,17 @@
 package org.mediasoft.warehouse.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.mediasoft.warehouse.dto.RequestCreateProductDto;
-import org.mediasoft.warehouse.dto.RequestUpdateProductDto;
-import org.mediasoft.warehouse.dto.ResponseProductDto;
+import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
+import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
+import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
 import org.mediasoft.warehouse.service.WarehouseService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,32 +32,28 @@ public class WarehouseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseProductDto createProduct(@RequestBody @Validated RequestCreateProductDto request) {
+    public ResponseProductDto createProduct(@RequestBody @Valid RequestCreateProductDto request) {
         return warehouseService.createProduct(request);
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ResponseProductDto > getProducts(@RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                  @RequestParam(defaultValue = "10") @Min(10) Integer size) {
         return warehouseService.getAllProducts(PageRequest.of(from / size, size));
     }
 
-    @GetMapping("{article}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseProductDto getProduct(@PathVariable UUID article) {
-        return warehouseService.getProductByArticle(article);
+    @GetMapping("{id}")
+    public ResponseProductDto getProduct(@PathVariable UUID id) {
+        return warehouseService.getProductById(id);
     }
 
-    @DeleteMapping("{article}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteProduct(@PathVariable UUID article) {
-        warehouseService.deleteByArticle(article);
+    @DeleteMapping("{id}")
+    public void deleteProduct(@PathVariable UUID id) {
+        warehouseService.deleteById(id);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping
-    public ResponseProductDto updateProduct(@RequestBody @Validated RequestUpdateProductDto request) {
+    @PatchMapping
+    public ResponseProductDto updateProduct(@RequestBody @Valid RequestUpdateProductDto request) {
         return warehouseService.updateProduct(request);
     }
 }

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS warehouse.products
     price             DECIMAL(10, 2),
     qty               DECIMAL(10, 2),
     inserted_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    updated_at        TIMESTAMP WITH TIME ZONE NOT NULL
+    last_qty_changed        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
     );
 
 COMMENT ON COLUMN warehouse.products.id
@@ -49,5 +49,5 @@ IS 'Количество товара';
 COMMENT ON COLUMN warehouse.products.inserted_at
 IS 'Дата и время создания записи';
 
-COMMENT ON COLUMN warehouse.products.updated_at
+COMMENT ON COLUMN warehouse.products.last_qty_changed
 IS 'Дата и время последнего обновления записи';
