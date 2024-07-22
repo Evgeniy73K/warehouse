@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/warehousedb
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=warehouse
     username: ${USER}
     password: ${PWD}
     driver-class-name: org.postgresql.Driver
@@ -8,6 +8,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        ddl-auto: validate
+        ddl-auto: update
   liquibase:
-    changeLog: classpath:db/changelog/db.master.xml
+    change-log: classpath:db/changelog/db.master.xml
+    enabled: true

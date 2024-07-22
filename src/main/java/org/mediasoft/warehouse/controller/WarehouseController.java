@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
 import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
+import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.service.WarehouseService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +33,8 @@ public class WarehouseController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseProductDto createProduct(@RequestBody @Valid RequestCreateProductDto request) {
-        return warehouseService.createProduct(request);
+        var createProductDto = ProductMapper.INSTANCE.toCreateProductDto(request);
+        return warehouseService.createProduct(createProductDto);
     }
 
     @GetMapping
@@ -54,6 +55,7 @@ public class WarehouseController {
 
     @PatchMapping
     public ResponseProductDto updateProduct(@RequestBody @Valid RequestUpdateProductDto request) {
-        return warehouseService.updateProduct(request);
+        var updateProductDto = ProductMapper.INSTANCE.toUpdateProductDto(request);
+        return warehouseService.updateProduct(updateProductDto);
     }
 }

@@ -10,15 +10,13 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TYPE product_category AS ENUM ('FRUITS', 'VEGETABLES');
-
 CREATE TABLE IF NOT EXISTS warehouse.products
 (
     id               UUID PRIMARY KEY         NOT NULL DEFAULT gen_random_uuid(),
     name              VARCHAR,
     article           UUID UNIQUE NOT NULL,
     dictionary        VARCHAR,
-    category          product_category,
+    category          VARCHAR,
     price             DECIMAL(10, 2),
     qty               DECIMAL(10, 2),
     inserted_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

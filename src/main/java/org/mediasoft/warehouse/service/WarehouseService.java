@@ -10,6 +10,8 @@ import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
 import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
 import org.mediasoft.warehouse.exceptions.SkuIsExistException;
+import org.mediasoft.warehouse.service.dto.CreateProductDto;
+import org.mediasoft.warehouse.service.dto.UpdateProductDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,7 @@ public class WarehouseService {
 
     private final ProductRepository productRepository;
 
-    public ResponseProductDto createProduct(RequestCreateProductDto requestCreateProductDto) {
-
-        var createProductDto = ProductMapper.INSTANCE.toCreateProductDto(requestCreateProductDto);
-
+    public ResponseProductDto createProduct(CreateProductDto createProductDto) {
 
         if (productRepository.findByArticle(createProductDto.getArticle()).isPresent()) {
             throw new SkuIsExistException(String.valueOf(createProductDto.getArticle()));
@@ -64,8 +63,7 @@ public class WarehouseService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseProductDto updateProduct(RequestUpdateProductDto request) {
-        var updateProductDto = ProductMapper.INSTANCE.toUpdateProductDto(request);
+    public ResponseProductDto updateProduct(UpdateProductDto updateProductDto) {
 
         final var product = getProduct(updateProductDto.getId());
 

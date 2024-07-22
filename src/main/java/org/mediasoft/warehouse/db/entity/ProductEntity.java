@@ -1,6 +1,8 @@
 package org.mediasoft.warehouse.db.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -27,11 +29,14 @@ public class ProductEntity {
     private String name;
     private UUID article;
     private String dictionary;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private BigDecimal price;
     private BigDecimal qty;
     private LocalDateTime insertedAt;
     private LocalDateTime lastQtyChanged;
+
+
 }
 
 
