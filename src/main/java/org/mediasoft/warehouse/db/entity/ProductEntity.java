@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.mediasoft.warehouse.db.entity.enums.Category;
 
 import java.math.BigDecimal;
@@ -33,10 +34,9 @@ public class ProductEntity {
     private Category category;
     private BigDecimal price;
     private BigDecimal qty;
+    @CreationTimestamp
     private LocalDateTime insertedAt;
     private LocalDateTime lastQtyChanged;
-
-
 }
 
 

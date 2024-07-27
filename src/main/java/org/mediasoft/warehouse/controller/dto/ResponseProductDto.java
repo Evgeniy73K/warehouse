@@ -17,6 +17,6 @@ public class ResponseProductDto {
     private String category;
     private BigDecimal price;
     private BigDecimal qty;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime insertedAt;
+    private LocalDateTime lastUpdated;
 }
