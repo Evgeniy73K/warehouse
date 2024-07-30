@@ -1,6 +1,7 @@
 package org.mediasoft.warehouse.scheduling;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.mediasoft.warehouse.annotations.Stopwatch;
 import org.mediasoft.warehouse.db.repository.ProductRepository;
@@ -20,6 +21,7 @@ import java.math.RoundingMode;
 @Profile("!local")
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
 @RequiredArgsConstructor
+@Log
 public class SimpleSchedulerService {
     private final ProductRepository productRepository;
 
