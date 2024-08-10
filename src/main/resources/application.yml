@@ -13,6 +13,7 @@ spring:
     change-log: classpath:db/changelog/db.master.xml
     enabled: true
 scheduler:
-  timing: 60000
-  pricePercentage: 10
-  enabled: true
+  timing: 100
+  pricePercentage: 30
+  enabled: false
+  optimization: true

@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Slf4j
-public class StopwatchAspect {
+public class MeasureExecutionTimeAspect {
 
-    @Around("@annotation(stopwatch)")
-    public Object measureExecutionTime(ProceedingJoinPoint joinPoint, Stopwatch stopwatch) throws Throwable {
+    @Around("@annotation(measureExecutionTime)")
+    public Object measureExecutionTime(ProceedingJoinPoint joinPoint, MeasureExecutionTime measureExecutionTime) throws Throwable {
         var startTime = System.currentTimeMillis();
 
         var returnValue = joinPoint.proceed();

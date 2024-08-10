@@ -10,3 +10,8 @@ CREATE TABLE IF NOT EXISTS products
     inserted_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     last_qty_changed TIMESTAMP WITH TIME ZONE          DEFAULT now()
 );
+
+INSERT INTO product
+select gen_random_uuid(), 'name' || generate_series(1, 10), 'article' || generate_series(1, 10),
+       'description' || generate_series(1, 10), floor(random() * (3 - 1 + 1) + 1)::int, 10.0, 50,
+       now()::timestamp(0), now()::timestamp(0) + INTERVAL '1 DAY';

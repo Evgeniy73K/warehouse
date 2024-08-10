@@ -9,6 +9,10 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     datasource:
       schema: classpath:db/changelog/products/sql/h2-init-sql
-      ddl-auto: validate
+      ddl-auto: create-drop
+
+      h2:
+        console:
+          enabled: true #http://localhost:8080/h2-console
   liquibase:
     enabled: false

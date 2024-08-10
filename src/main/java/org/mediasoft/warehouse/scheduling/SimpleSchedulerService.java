@@ -3,10 +3,10 @@ package org.mediasoft.warehouse.scheduling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.mediasoft.warehouse.annotations.Stopwatch;
+import org.mediasoft.warehouse.annotations.MeasureExecutionTime;
 import org.mediasoft.warehouse.db.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import java.math.RoundingMode;
 @Slf4j
 @Component
 @Profile("!local")
-@ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
+@ConditionalOnExpression("${scheduler.optimization} == false && ${scheduler.enabled} == true")
 @RequiredArgsConstructor
 @Log
 public class SimpleSchedulerService {
@@ -31,10 +31,11 @@ public class SimpleSchedulerService {
 
     @Scheduled(fixedRateString = "${scheduler.timing}")
     @Transactional
-    @Stopwatch
+    @MeasureExecutionTime
     public void simpleUpdatePrice() {
         log.info("Start simple scheduler");
         var products = productRepository.findAll();
+        log.info("!!! " + products.size());
         products.forEach(product ->
                 product.setPrice(product.getPrice()
                         .add(product.getPrice().divide(BigDecimal.valueOf(100)).multiply(pricePercentage))
