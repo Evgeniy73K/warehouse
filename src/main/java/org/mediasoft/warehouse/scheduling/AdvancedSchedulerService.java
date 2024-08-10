@@ -41,21 +41,23 @@ public class AdvancedSchedulerService {
     @MeasureExecutionTime
     public void advancedUpdatePrice() {
         log.info("START advancedUpdatePrice");
-        Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-        connection.setAutoCommit(false);
-        var pstmt = connection.prepareStatement(updateSqlQuery);
-        try {
-            connection.prepareStatement(lockQuery).execute();
-            pstmt.setBigDecimal(1, pricePercentage);
-            resultSet = pstmt.executeQuery();
-        } catch (SQLException sqlException) {
-            connection.rollback();
-            sqlException.printStackTrace();
-        }
-        connection.commit();
 
-        saveToFile(resultSet, filePath);
-        connection.close();
+        try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
+            connection.setAutoCommit(false);
+            var pstmt = connection.prepareStatement(updateSqlQuery);
+            try {
+                connection.prepareStatement(lockQuery).execute();
+                pstmt.setBigDecimal(1, pricePercentage);
+                resultSet = pstmt.executeQuery();
+            } catch (SQLException sqlException) {
+                connection.rollback();
+                sqlException.printStackTrace();
+            }
+            connection.commit();
+
+            saveToFile(resultSet, filePath);
+        }
+
 
         log.info("END advancedUpdatePrice");
     }
@@ -66,32 +68,29 @@ public class AdvancedSchedulerService {
 
         StringBuilder row = new StringBuilder();
 
-        FileWriter writer = new FileWriter(file, true);
 
-        while (rs.next()) {
-            row.append(rs.getObject("id").toString())
-                    .append(",")
-                    .append(rs.getString("name"))
-                    .append(",")
-                    .append(rs.getString("article"))
-                    .append(",")
-                    .append(rs.getString("dictionary"))
-                    .append(",")
-                    .append(rs.getString("category"))
-                    .append(",")
-                    .append(rs.getBigDecimal("price").toString())
-                    .append(",")
-                    .append(rs.getBigDecimal("qty"))
-                    .append(",")
-                    .append(rs.getString("inserted_at"))
-                    .append(",")
-                    .append(rs.getString("last_qty_changed"))
-                    .append("\n");
+        try (FileWriter writer = new FileWriter(file, true)) {
+            while (rs.next()) {
+                row.append(rs.getObject("id").toString())
+                        .append(",")
+                        .append(rs.getString("name"))
+                        .append(",")
+                        .append(rs.getString("article"))
+                        .append(",")
+                        .append(rs.getString("dictionary"))
+                        .append(",")
+                        .append(rs.getString("category"))
+                        .append(",")
+                        .append(rs.getBigDecimal("price").toString())
+                        .append(",")
+                        .append(rs.getBigDecimal("qty"))
+                        .append(",")
+                        .append(rs.getString("inserted_at"))
+                        .append(",")
+                        .append(rs.getString("last_qty_changed"))
+                        .append("\n");
+            }
+            writer.write(String.valueOf(row));
         }
-
-        writer.write(String.valueOf(row));
-
-        writer.close();
     }
-
 }
