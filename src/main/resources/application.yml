@@ -16,4 +16,4 @@ scheduler:
   timing: 100
   pricePercentage: 30
   enabled: false
-  optimization: true
+  optimization: false

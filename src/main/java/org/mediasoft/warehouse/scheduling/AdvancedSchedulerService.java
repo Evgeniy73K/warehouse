@@ -65,7 +65,7 @@ public class AdvancedSchedulerService {
     @SneakyThrows
     private void saveToFile(ResultSet rs, String filePath) {
         File file = new File(filePath);
-
+        
         StringBuilder row = new StringBuilder();
 
 
