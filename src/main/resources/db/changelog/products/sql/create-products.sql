@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS warehouse.products
     price             DECIMAL(10, 2),
     qty               DECIMAL(10, 2),
     inserted_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    last_qty_changed        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+    last_qty_changed        TIMESTAMP WITH TIME ZONE
     );
 
 COMMENT ON COLUMN warehouse.products.id

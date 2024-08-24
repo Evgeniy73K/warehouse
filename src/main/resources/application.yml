@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=warehouse
-    username: ${USER}
-    password: ${PWD}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -12,3 +12,8 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.master.xml
     enabled: true
+scheduler:
+  timing: 100
+  pricePercentage: 30
+  enabled: false
+  optimization: false
