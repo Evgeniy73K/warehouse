@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 @ControllerAdvice
-public class CustomExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(SkuIsExistException.class)
     public ResponseEntity<ErrorDetail> handleSkuIsExistException(SkuIsExistException e) {
