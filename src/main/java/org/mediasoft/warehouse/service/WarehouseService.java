@@ -31,9 +31,10 @@ public class WarehouseService {
     private final ProductRepository productRepository;
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
+        var productList = productRepository.findByArticle(createProductDto.getArticle());
 
-        if (productRepository.findByArticle(createProductDto.getArticle()).isPresent()) {
-            throw new SkuIsExistException(String.valueOf(createProductDto.getArticle()));
+        if (productList.isPresent()) {
+            throw new SkuIsExistException(String.valueOf(createProductDto.getArticle()), productList.get().getId());
         }
 
         var product = ProductMapper.INSTANCE.toProductEntity(createProductDto);
@@ -70,8 +71,9 @@ public class WarehouseService {
         Optional.ofNullable(updateProductDto.getArticle())
                 .filter(article -> !article.equals(product.getArticle()))
                 .ifPresent(article -> {
+                    var productList = productRepository.findByArticle(article);
                     if (productRepository.findByArticle(article).isPresent()) {
-                        throw new SkuIsExistException(String.valueOf(article));
+                        throw new SkuIsExistException(String.valueOf(article), productList.get().getId());
                     }
                     product.setArticle(article);
                 });

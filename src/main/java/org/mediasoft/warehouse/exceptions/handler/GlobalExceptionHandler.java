@@ -20,12 +20,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SkuIsExistException.class)
     public ResponseEntity<ErrorDetail> handleSkuIsExistException(SkuIsExistException e) {
-        log.error("SKU is exist: {}", e.getMessage());
+        log.error("SKU is exist: {} by product with id: {}", e.getMessage(), e.getProductId());
 
          final ErrorDetail errorDetail = ErrorDetail
                 .builder()
                 .exceptionName("SkuIsExistException")
-                 .message("SKU is exist:" + e.getMessage())
+                 .message("SKU is exist: " + e.getMessage()+ " by pid:" + e.getProductId())
                 .time(LocalDateTime.now())
                 .clazz(e.getClass())
                 .build();
