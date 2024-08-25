@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
 import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
+import org.mediasoft.warehouse.controller.dto.SearchDto;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.service.WarehouseService;
 import org.springframework.data.domain.PageRequest;
@@ -30,12 +31,12 @@ import java.util.UUID;
 public class WarehouseController {
     private final WarehouseService warehouseService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseProductDto createProduct(@RequestBody @Valid RequestCreateProductDto request) {
-        var createProductDto = ProductMapper.INSTANCE.toCreateProductDto(request);
-        return warehouseService.createProduct(createProductDto);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResponseProductDto createProduct(@RequestBody @Valid RequestCreateProductDto request) {
+//        var createProductDto = ProductMapper.INSTANCE.toCreateProductDto(request);
+//        return warehouseService.createProduct(createProductDto);
+//    }
 
     @GetMapping
     public List<ResponseProductDto > getProducts(@RequestParam(defaultValue = "0") @Min(0) Integer from,
@@ -58,4 +59,11 @@ public class WarehouseController {
         var updateProductDto = ProductMapper.INSTANCE.toUpdateProductDto(request);
         return warehouseService.updateProduct(updateProductDto);
     }
+
+    @PostMapping
+    public List<ResponseProductDto > findProducts(@RequestBody List<SearchDto> searchDto) {
+        return warehouseService.findProductEntitysByCriterias(searchDto);
+    }
+
+
 }
