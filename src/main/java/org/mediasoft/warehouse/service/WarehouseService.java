@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mediasoft.warehouse.controller.dto.SearchDto;
+import org.mediasoft.warehouse.controller.dto.RequestSearchDto;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;
@@ -15,6 +15,7 @@ import org.mediasoft.warehouse.db.repository.ProductRepository;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
 import org.mediasoft.warehouse.exceptions.SkuIsExistException;
 import org.mediasoft.warehouse.service.dto.CreateProductDto;
+import org.mediasoft.warehouse.service.dto.SearchDto;
 import org.mediasoft.warehouse.service.dto.UpdateProductDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.mediasoft.warehouse.controller.dto.enums.SearchEnum.EQUAL;
 
 @Service
 @RequiredArgsConstructor
@@ -133,7 +132,7 @@ public class WarehouseService {
                 .orElseThrow(() -> new NoSuchElementException(String.valueOf(id)));
     }
 
-    public List<ResponseProductDto> findProductEntitysByCriterias(List<SearchDto> searchDto) {
+    public List<ResponseProductDto> findProductEntitysByCriterias(List<SearchDto> searchDto, Pageable pageable) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProductEntity> cq = cb.createQuery(ProductEntity.class);
 
