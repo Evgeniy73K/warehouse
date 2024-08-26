@@ -156,7 +156,10 @@ public class WarehouseService {
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        var result = em.createQuery(cq).getResultList();
+        var result = em.createQuery(cq)
+                .setFirstResult(pageable.getPageNumber())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
         return result.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
                 .collect(Collectors.toList());
