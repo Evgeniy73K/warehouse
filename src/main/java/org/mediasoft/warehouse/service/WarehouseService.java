@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mediasoft.warehouse.controller.dto.RequestSearchDto;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;

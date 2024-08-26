@@ -17,13 +17,10 @@ public class SearchDtoMapper {
         List<SearchDto> searchDtos = new ArrayList<>();
 
         requestSearchDto.forEach(r -> {
-            String field = null;
-            Object value = null;
-            SearchEnum operation = null;
-
-
-            field = r.getField();
-            value = r.getValue();
+            SearchEnum operation;
+            
+            var field = r.getField();
+            var value = r.getValue();
 
             if (r.getOperation().equals(EQUAL.getValue()) ||
                     r.getOperation().equals(GRATER_THAN_OR_EQ.getValue()) ||
