@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,6 +36,8 @@ public class WarehouseService {
     private final EntityManager em;
 
     private final ProductRepository productRepository;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
         var productList = productRepository.findByArticle(createProductDto.getArticle());
@@ -140,18 +143,27 @@ public class WarehouseService {
 
         searchDto.forEach(
                 s -> {
+                    var value = s.getValue();
+
+                    if ("insertedAt".equals(s.getField())) {
+                        try {
+                            value = LocalDateTime.parse((String) value, formatter);
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Invalid date format", e);
+                        }
+                    }
+
                     switch (s.getOperation()) {
-                        case EQUAL -> predicates.add(cb.equal(productEntity.get(s.getField()), s.getValue()));
+                        case EQUAL -> predicates.add(cb.equal(productEntity.get(s.getField()), value));
                         case GRATER_THAN_OR_EQ ->
-                                predicates.add(cb.greaterThanOrEqualTo(productEntity.get(s.getField()), (Comparable) s.getValue()));
+                                predicates.add(cb.greaterThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
                         case LESS_THAN_OR_EQ ->
-                                predicates.add(cb.lessThanOrEqualTo(productEntity.get(s.getField()), (Comparable) s.getValue()));
+                                predicates.add(cb.lessThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
                         case LIKE -> predicates.add(cb.like(productEntity.get(s.getField()), "%" + s.getValue() + "%"));
                         default -> throw new IllegalStateException("Unexpected value: " + s.getOperation());
                     }
                 }
         );
-
 
         cq.where(predicates.toArray(new Predicate[0]));
 
@@ -159,6 +171,7 @@ public class WarehouseService {
                 .setFirstResult(pageable.getPageNumber())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
+
         return result.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
                 .collect(Collectors.toList());

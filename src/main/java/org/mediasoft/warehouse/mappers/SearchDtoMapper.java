@@ -18,7 +18,7 @@ public class SearchDtoMapper {
 
         requestSearchDto.forEach(r -> {
             SearchEnum operation;
-            
+
             var field = r.getField();
             var value = r.getValue();
 
