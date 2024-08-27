@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum SearchEnum {
+public enum CriteriaEnum {
     EQUAL("="),
     GRATER_THAN_OR_EQ(">="),
     LESS_THAN_OR_EQ("<="),
@@ -13,10 +13,10 @@ public enum SearchEnum {
 
     private final String value;
 
-    public static SearchEnum fromValue(String value) {
-        for (SearchEnum searchEnum : SearchEnum.values()) {
-            if (searchEnum.value.equals(value)) {
-                return searchEnum;
+    public static CriteriaEnum fromValue(String value) {
+        for (CriteriaEnum criteriaEnum : CriteriaEnum.values()) {
+            if (criteriaEnum.value.equals(value)) {
+                return criteriaEnum;
             }
         }
         throw new IllegalArgumentException("Unknown enum value: " + value);

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RequestSearchDto {
+public class RequestCriteriaDto {
     @NotNull(message = "field cannot be null")
     private String field;
     @NotNull(message = "value cannot be null")

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
 import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
-import org.mediasoft.warehouse.controller.dto.RequestSearchDto;
+import org.mediasoft.warehouse.controller.dto.RequestCriteriaDto;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.mappers.SearchDtoMapper;
 import org.mediasoft.warehouse.service.WarehouseService;
@@ -62,10 +62,10 @@ public class WarehouseController {
     }
 
     @PostMapping(value = "/search")
-    public List<ResponseProductDto > findProducts(@RequestBody @Valid List<RequestSearchDto> requestSearchDto,
+    public List<ResponseProductDto > findProducts(@RequestBody @Valid List<RequestCriteriaDto> requestCriteriaDto,
                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                   @RequestParam(defaultValue = "10") @Min(10) Integer size) {
-        var searchDto = SearchDtoMapper.toSearchDto(requestSearchDto);
+        var searchDto = SearchDtoMapper.toSearchDto(requestCriteriaDto);
         return warehouseService.findProductEntitysByCriterias(searchDto, PageRequest.of(from / size, size));
     }
 

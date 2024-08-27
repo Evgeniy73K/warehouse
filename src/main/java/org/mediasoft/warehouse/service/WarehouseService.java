@@ -14,12 +14,14 @@ import org.mediasoft.warehouse.db.repository.ProductRepository;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
 import org.mediasoft.warehouse.exceptions.SkuIsExistException;
 import org.mediasoft.warehouse.service.dto.CreateProductDto;
-import org.mediasoft.warehouse.service.dto.SearchDto;
+import org.mediasoft.warehouse.service.dto.CriteriaDto;
 import org.mediasoft.warehouse.service.dto.UpdateProductDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class WarehouseService {
     private final EntityManager em;
 
     private final ProductRepository productRepository;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
@@ -134,20 +136,21 @@ public class WarehouseService {
                 .orElseThrow(() -> new NoSuchElementException(String.valueOf(id)));
     }
 
-    public List<ResponseProductDto> findProductEntitysByCriterias(List<SearchDto> searchDto, Pageable pageable) {
+    public List<ResponseProductDto> findProductEntitysByCriterias(List<CriteriaDto> criteriaDto, Pageable pageable) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProductEntity> cq = cb.createQuery(ProductEntity.class);
 
         Root<ProductEntity> productEntity = cq.from(ProductEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        searchDto.forEach(
+        criteriaDto.forEach(
                 s -> {
                     var value = s.getValue();
 
                     if ("insertedAt".equals(s.getField())) {
                         try {
-                            value = LocalDateTime.parse((String) value, formatter);
+                            value = LocalDateTime.parse(value.toString(), DATE_FORMATTER);
+                            System.out.println(value);
                         } catch (Exception e) {
                             throw new IllegalArgumentException("Invalid date format", e);
                         }
@@ -159,9 +162,12 @@ public class WarehouseService {
                                 predicates.add(cb.greaterThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
                         case LESS_THAN_OR_EQ ->
                                 predicates.add(cb.lessThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
-                        case LIKE -> predicates.add(cb.like(productEntity.get(s.getField()), "%" + s.getValue() + "%"));
+                        case LIKE -> handleLikeOperation(predicates, cb, productEntity, s.getField(), value);
                         default -> throw new IllegalStateException("Unexpected value: " + s.getOperation());
+
                     }
+
+
                 }
         );
 
@@ -177,4 +183,21 @@ public class WarehouseService {
                 .collect(Collectors.toList());
     }
 
+    private void handleLikeOperation(List<Predicate> predicates, CriteriaBuilder cb, Root<ProductEntity> productEntity, String field, Object value) {
+        switch (field) {
+            case "insertedAt" -> {
+                LocalDateTime dateValue = (LocalDateTime) value;
+                predicates.add(cb.between(productEntity.get(field), dateValue.minusDays(3), dateValue.plusDays(3)));
+            }
+            case "price" -> {
+                BigDecimal bigDecimalValue = BigDecimal.valueOf((Integer) value);
+                BigDecimal range = bigDecimalValue.multiply(BigDecimal.valueOf(0.1));
+                BigDecimal startPrice = bigDecimalValue.subtract(range);
+                BigDecimal endPrice = bigDecimalValue.add(range);
+                predicates.add(cb.between(productEntity.get(field), startPrice, endPrice));
+            }
+            default -> predicates.add(cb.like(productEntity.get(field), "%" + value + "%"));
+        }
+
+    }
 }
