@@ -21,4 +21,4 @@ public enum CriteriaEnum {
         }
         throw new IllegalArgumentException("Unknown enum value: " + value);
     }
-}
+} //переименовать value в code, поправить цикл, json creator, json value аннотация

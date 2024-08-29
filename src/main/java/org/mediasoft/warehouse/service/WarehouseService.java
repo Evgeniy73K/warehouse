@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mediasoft.warehouse.criteria.CriteriaUtility;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;
@@ -144,30 +145,28 @@ public class WarehouseService {
         List<Predicate> predicates = new ArrayList<>();
 
         criteriaDto.forEach(
-                s -> {
-                    var value = s.getValue();
+                c -> {
+                    var value = c.getValue();
 
-                    if ("insertedAt".equals(s.getField())) {
+                    if ("insertedAt".equals(c.getField())) {
                         try {
                             value = LocalDateTime.parse(value.toString(), DATE_FORMATTER);
-                            System.out.println(value);
                         } catch (Exception e) {
                             throw new IllegalArgumentException("Invalid date format", e);
                         }
                     }
 
-                    switch (s.getOperation()) {
-                        case EQUAL -> predicates.add(cb.equal(productEntity.get(s.getField()), value));
+                    switch (c.getOperation()) {
+                        case EQUAL -> predicates.add(cb.equal(productEntity.get(c.getField()), value));
                         case GRATER_THAN_OR_EQ ->
-                                predicates.add(cb.greaterThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
+                                CriteriaUtility.handleGraterThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
                         case LESS_THAN_OR_EQ ->
-                                predicates.add(cb.lessThanOrEqualTo(productEntity.get(s.getField()), (Comparable) value));
-                        case LIKE -> handleLikeOperation(predicates, cb, productEntity, s.getField(), value);
-                        default -> throw new IllegalStateException("Unexpected value: " + s.getOperation());
+                                CriteriaUtility.handleLessThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
+                        case LIKE ->
+                                CriteriaUtility.handleLikeOperation(predicates, cb, productEntity, c.getField(), value);
+                        default -> throw new IllegalStateException("Unexpected value: " + c.getOperation());
 
                     }
-
-
                 }
         );
 
@@ -183,21 +182,5 @@ public class WarehouseService {
                 .collect(Collectors.toList());
     }
 
-    private void handleLikeOperation(List<Predicate> predicates, CriteriaBuilder cb, Root<ProductEntity> productEntity, String field, Object value) {
-        switch (field) {
-            case "insertedAt" -> {
-                LocalDateTime dateValue = (LocalDateTime) value;
-                predicates.add(cb.between(productEntity.get(field), dateValue.minusDays(3), dateValue.plusDays(3)));
-            }
-            case "price" -> {
-                BigDecimal bigDecimalValue = BigDecimal.valueOf((Integer) value);
-                BigDecimal range = bigDecimalValue.multiply(BigDecimal.valueOf(0.1));
-                BigDecimal startPrice = bigDecimalValue.subtract(range);
-                BigDecimal endPrice = bigDecimalValue.add(range);
-                predicates.add(cb.between(productEntity.get(field), startPrice, endPrice));
-            }
-            default -> predicates.add(cb.like(productEntity.get(field), "%" + value + "%"));
-        }
 
-    }
 }

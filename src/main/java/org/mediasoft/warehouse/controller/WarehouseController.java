@@ -69,4 +69,6 @@ public class WarehouseController {
         return warehouseService.findProductEntitysByCriterias(searchDto, PageRequest.of(from / size, size));
     }
 
+    //Pageable  передавать на пагинацию
+
 }

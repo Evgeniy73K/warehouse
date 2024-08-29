@@ -16,3 +16,5 @@ public class RequestCriteriaDto {
     @Pattern(regexp = "^(=|>=|<=|~|EQUAL|GRATER_THAN_OR_EQ|LESS_THAN_OR_EQ|LIKE)$", message = "Invalid operation")
     private String operation;
 }
+
+//убрать паттерн
