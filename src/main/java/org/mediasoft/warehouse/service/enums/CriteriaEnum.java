@@ -1,5 +1,6 @@
 package org.mediasoft.warehouse.service.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,14 +12,15 @@ public enum CriteriaEnum {
     LESS_THAN_OR_EQ("<="),
     LIKE("~");
 
-    private final String value;
+    private final String code;
 
+    @JsonCreator
     public static CriteriaEnum fromValue(String value) {
         for (CriteriaEnum criteriaEnum : CriteriaEnum.values()) {
-            if (criteriaEnum.value.equals(value)) {
+            if (criteriaEnum.code.equals(value) || criteriaEnum.name().equals(value) ) {
                 return criteriaEnum;
             }
         }
         throw new IllegalArgumentException("Unknown enum value: " + value);
     }
-} //переименовать value в code, поправить цикл, json creator, json value аннотация
+}

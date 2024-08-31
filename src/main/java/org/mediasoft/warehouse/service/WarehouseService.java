@@ -21,8 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -140,7 +138,6 @@ public class WarehouseService {
     public List<ResponseProductDto> findProductEntitysByCriterias(List<CriteriaDto> criteriaDto, Pageable pageable) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ProductEntity> cq = cb.createQuery(ProductEntity.class);
-
         Root<ProductEntity> productEntity = cq.from(ProductEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
@@ -159,7 +156,7 @@ public class WarehouseService {
                     switch (c.getOperation()) {
                         case EQUAL -> predicates.add(cb.equal(productEntity.get(c.getField()), value));
                         case GRATER_THAN_OR_EQ ->
-                                CriteriaUtility.handleGraterThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
+                                CriteriaUtility.handleGreaterThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
                         case LESS_THAN_OR_EQ ->
                                 CriteriaUtility.handleLessThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
                         case LIKE ->
