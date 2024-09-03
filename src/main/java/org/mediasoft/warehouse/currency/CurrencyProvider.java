@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CurrencyProviderImpl {
+public class CurrencyProvider {
     @Value(value = "${currency-service.file}")
     private String filePath;
     private final ObjectMapper objectMapper = new ObjectMapper();

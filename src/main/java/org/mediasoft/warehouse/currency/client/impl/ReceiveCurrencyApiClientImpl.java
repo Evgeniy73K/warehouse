@@ -12,8 +12,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @Service
 public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
+
     @Value(value = "${currency-service.host}")
     private String baseUrl;
+
     @Value(value = "${currency-service.methods.get-currency}")
     private String endPoint;
 
@@ -23,6 +25,7 @@ public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
     @Override
     public ResponseCurrencyDto getGetResponseCurrencyDto() {
         log.info("Get currency from {}", baseUrl);
+
         WebClient client = WebClient.builder()
                 .baseUrl(baseUrl)
                 .build();

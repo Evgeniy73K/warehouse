@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReceiveCurrencyApiClientMock implements ReceiveCurrencyApiClient {
+
     private final EasyRandom easyRandom = new EasyRandom();
+
     @Override
     public ResponseCurrencyDto getGetResponseCurrencyDto() {
         return easyRandom.nextObject(ResponseCurrencyDto.class);
