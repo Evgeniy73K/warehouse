@@ -4,14 +4,24 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    cache:
+      type: simple
+      simple:
+        time-to-live:  60000
+      log:
+        level: debug
+
+    logging:
+      level:
+        org.springframework.cache: debug
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         ddl-auto: validate
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
+        show_sql: false
+        format_sql: false
+        use_sql_comments: false
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
@@ -22,3 +32,9 @@ scheduler:
   pricePercentage: 30
   enabled: false
   optimization: false
+
+currency-service:
+  host: http://localhost:8081
+  methods:
+    get-currency: /api/v1/currencies
+  file: src/main/resources/currency/currRate.json

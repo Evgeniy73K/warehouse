@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mediasoft.warehouse.criteria.CriteriaUtility;
+import org.mediasoft.warehouse.currency.CurrRateCalculator;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;
@@ -61,7 +62,10 @@ public class WarehouseService {
 
         log.info("Product getted successfully: {}", product.toString());
 
-        return ProductMapper.INSTANCE.toResponseProductDto(product);
+        var productDto = ProductMapper.INSTANCE.toResponseProductDto(product);
+        CurrRateCalculator.setCurrency(productDto);
+
+        return productDto;
     }
 
     public List<ResponseProductDto> getAllProducts(Pageable pageable) {
@@ -71,6 +75,7 @@ public class WarehouseService {
 
         return productsList.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
+                .map(CurrRateCalculator::setCurrency)
                 .collect(Collectors.toList());
     }
 
@@ -176,8 +181,7 @@ public class WarehouseService {
 
         return result.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
+                .map(CurrRateCalculator::setCurrency)
                 .collect(Collectors.toList());
     }
-
-
 }
