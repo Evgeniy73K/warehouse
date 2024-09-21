@@ -28,7 +28,7 @@ public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
 
         WebClient client = WebClient.builder()
                 .baseUrl(baseUrl)
-                .build();
+                .build(); //сделать как бин в конфигурацию
 
         return client
                 .get()

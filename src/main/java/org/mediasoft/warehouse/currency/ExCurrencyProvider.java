@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.mediasoft.warehouse.controller.dto.ResponseCurrencyDto;
-import org.mediasoft.warehouse.currency.client.impl.ReceiveCurrencyApiClientMock;
+import org.mediasoft.warehouse.currency.client.impl.ReceiveCurrencyApiClientImpl;
 import org.mediasoft.warehouse.currency.enums.CurrencyEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,11 +19,11 @@ import java.math.BigDecimal;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CurrencyProvider {
+public class ExCurrencyProvider {
     @Value(value = "${currency-service.file}")
     private String filePath;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ReceiveCurrencyApiClientMock receiveCurrencyService;
+    private final ReceiveCurrencyApiClientImpl receiveCurrencyService;
 
     @SneakyThrows
     public BigDecimal getCurrRate(CurrencyEnum currency) {

@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 @Component
 @RequiredArgsConstructor
 public class CurrencyFilter extends OncePerRequestFilter {
-    private final CurrencyProvider currencyProvider;
-    public static BigDecimal currRate;
+    private final ExCurrencyProvider exCurrencyProvider;
+    public static BigDecimal currRate; //переделать
     public static CurrencyEnum currencyEnum;
     private final HttpSession httpSession;
 
@@ -32,7 +32,7 @@ public class CurrencyFilter extends OncePerRequestFilter {
             httpSession.setAttribute("currency", CurrencyEnum.fromValue(request.getHeader("currency")));
         }
 
-        currRate = currencyProvider.getCurrRate(CurrencyEnum.fromValue(httpSession.getAttribute("currency").toString()));
+        currRate = exCurrencyProvider.getCurrRate(CurrencyEnum.fromValue(httpSession.getAttribute("currency").toString()));
         currencyEnum = CurrencyEnum.fromValue(httpSession.getAttribute("currency").toString());
         filterChain.doFilter(request, response);
     }
