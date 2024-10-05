@@ -1,22 +1,29 @@
 package org.mediasoft.warehouse.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mediasoft.warehouse.criteria.CriteriaUtility;
 import org.mediasoft.warehouse.mappers.ProductMapper;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;
 import org.mediasoft.warehouse.db.repository.ProductRepository;
-import org.mediasoft.warehouse.controller.dto.RequestCreateProductDto;
-import org.mediasoft.warehouse.controller.dto.RequestUpdateProductDto;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
 import org.mediasoft.warehouse.exceptions.SkuIsExistException;
 import org.mediasoft.warehouse.service.dto.CreateProductDto;
+import org.mediasoft.warehouse.service.dto.CriteriaDto;
 import org.mediasoft.warehouse.service.dto.UpdateProductDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -27,8 +34,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class WarehouseService {
+    private final EntityManager em;
 
     private final ProductRepository productRepository;
+    DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
         var productList = productRepository.findByArticle(createProductDto.getArticle());
@@ -124,5 +134,50 @@ public class WarehouseService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.valueOf(id)));
     }
+
+    public List<ResponseProductDto> findProductEntitysByCriterias(List<CriteriaDto> criteriaDto, Pageable pageable) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> cq = cb.createQuery(ProductEntity.class);
+        Root<ProductEntity> productEntity = cq.from(ProductEntity.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        criteriaDto.forEach(
+                c -> {
+                    var value = c.getValue();
+
+                    if ("insertedAt".equals(c.getField())) {
+                        try {
+                            value = LocalDateTime.parse(value.toString(), DATE_FORMATTER);
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Invalid date format", e);
+                        }
+                    }
+
+                    switch (c.getOperation()) {
+                        case EQUAL -> predicates.add(cb.equal(productEntity.get(c.getField()), value));
+                        case GRATER_THAN_OR_EQ ->
+                                CriteriaUtility.handleGreaterThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
+                        case LESS_THAN_OR_EQ ->
+                                CriteriaUtility.handleLessThanOrEqOperation(predicates, cb, productEntity, c.getField(), value);
+                        case LIKE ->
+                                CriteriaUtility.handleLikeOperation(predicates, cb, productEntity, c.getField(), value);
+                        default -> throw new IllegalStateException("Unexpected value: " + c.getOperation());
+
+                    }
+                }
+        );
+
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        var result = em.createQuery(cq)
+                .setFirstResult(pageable.getPageNumber())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        return result.stream()
+                .map(ProductMapper.INSTANCE::toResponseProductDto)
+                .collect(Collectors.toList());
+    }
+
 
 }
