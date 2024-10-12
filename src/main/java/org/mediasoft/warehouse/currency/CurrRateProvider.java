@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ExCurrencyProvider {
+public class CurrRateProvider {
     @Value(value = "${currency-service.file}")
     private String filePath;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -27,6 +27,7 @@ public class ExCurrencyProvider {
 
     @SneakyThrows
     public BigDecimal getCurrRate(CurrencyEnum currency) {
+
         ResponseCurrencyDto responseCurrencyDto;
         BigDecimal currRate;
 
@@ -34,15 +35,19 @@ public class ExCurrencyProvider {
             responseCurrencyDto = receiveCurrencyService.getGetResponseCurrencyDto();
             var file = new File(filePath);
             var writer = new FileWriter(file);
+            log.info("!!!!!!Запись курса в файл");
             writer.write(objectMapper.writeValueAsString(responseCurrencyDto));
             writer.close();
 
         } catch (WebClientException e) {
-            log.warn(e.getMessage());
+
+            log.error("!!!!!! ОШИКА берем курс из файла"  + e.getMessage());
+
             try (var responseCurrency = new FileInputStream(filePath)) {
                 responseCurrencyDto = objectMapper.readValue(responseCurrency, ResponseCurrencyDto.class);
             }
         }
+
         currRate = switch (currency) {
             case EUR -> responseCurrencyDto.getEUR();
             case USD -> responseCurrencyDto.getUSD();

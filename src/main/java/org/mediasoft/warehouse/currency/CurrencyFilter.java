@@ -11,14 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 @Component
 @RequiredArgsConstructor
 public class CurrencyFilter extends OncePerRequestFilter {
-    private final ExCurrencyProvider exCurrencyProvider;
-    public static BigDecimal currRate; //переделать
-    public static CurrencyEnum currencyEnum;
     private final HttpSession httpSession;
 
     @Override
@@ -32,8 +28,6 @@ public class CurrencyFilter extends OncePerRequestFilter {
             httpSession.setAttribute("currency", CurrencyEnum.fromValue(request.getHeader("currency")));
         }
 
-        currRate = exCurrencyProvider.getCurrRate(CurrencyEnum.fromValue(httpSession.getAttribute("currency").toString()));
-        currencyEnum = CurrencyEnum.fromValue(httpSession.getAttribute("currency").toString());
         filterChain.doFilter(request, response);
     }
 }

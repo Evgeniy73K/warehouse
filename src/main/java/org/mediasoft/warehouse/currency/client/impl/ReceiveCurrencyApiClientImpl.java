@@ -24,7 +24,7 @@ public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
     @SneakyThrows
     @Override
     public ResponseCurrencyDto getGetResponseCurrencyDto() {
-        log.info("Get currency from {}", baseUrl);
+        log.info("!!!!!! Получаем курс из сервиса !!! Get currency from {}", baseUrl);
 
         WebClient client = WebClient.builder()
                 .baseUrl(baseUrl)

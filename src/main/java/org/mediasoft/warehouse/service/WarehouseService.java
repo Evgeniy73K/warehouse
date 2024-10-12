@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WarehouseService {
     private final EntityManager em;
+    private final  CurrRateCalculator currRateCalculator;
 
     private final ProductRepository productRepository;
     DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
@@ -63,7 +64,7 @@ public class WarehouseService {
         log.info("Product getted successfully: {}", product.toString());
 
         var productDto = ProductMapper.INSTANCE.toResponseProductDto(product);
-        CurrRateCalculator.setCurrency(productDto);
+        productDto = currRateCalculator.setCurrency(productDto);
 
         return productDto;
     }
@@ -75,7 +76,7 @@ public class WarehouseService {
 
         return productsList.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
-                .map(CurrRateCalculator::setCurrency)
+                .map(currRateCalculator::setCurrency)
                 .collect(Collectors.toList());
     }
 
@@ -181,7 +182,7 @@ public class WarehouseService {
 
         return result.stream()
                 .map(ProductMapper.INSTANCE::toResponseProductDto)
-                .map(CurrRateCalculator::setCurrency)
+                .map(currRateCalculator::setCurrency)
                 .collect(Collectors.toList());
     }
 }

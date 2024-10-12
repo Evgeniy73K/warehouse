@@ -4,13 +4,8 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    cache:
-      type: simple
-      simple:
-        time-to-live:  1
-      log:
-        level: debug
-
+    log:
+      level: debug
     logging:
       level:
         org.springframework.cache: debug
@@ -32,6 +27,7 @@ scheduler:
   pricePercentage: 30
   enabled: false
   optimization: false
+  clearCacheTiming: 10000
 
 currency-service:
   host: http://localhost:8081
