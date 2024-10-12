@@ -22,7 +22,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "products")
+@Table(name = "product")
 public class ProductEntity {
     @Id
     @GeneratedValue
