@@ -1,5 +1,6 @@
 package org.mediasoft.warehouse.currency.client.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.mediasoft.warehouse.controller.dto.ResponseCurrencyDto;
@@ -11,12 +12,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
 
-    @Value(value = "${currency-service.host}")
-    private String baseUrl;
+    private final WebClient webClient;
 
-    @Value(value = "${currency-service.methods.get-currency}")
+    @Value("${currency-service.methods.get-currency}")
     private String endPoint;
 
 
@@ -24,13 +25,9 @@ public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
     @SneakyThrows
     @Override
     public ResponseCurrencyDto getGetResponseCurrencyDto() {
-        log.info("!!!!!! Получаем курс из сервиса !!! Get currency from {}", baseUrl);
+        log.info("!!!!!! Получаем курс из сервиса !!! Get currency from {}", webClient);
 
-        WebClient client = WebClient.builder()
-                .baseUrl(baseUrl)
-                .build(); //сделать как бин в конфигурацию
-
-        return client
+        return webClient
                 .get()
                 .uri(endPoint)
                 .retrieve()
@@ -39,3 +36,4 @@ public class ReceiveCurrencyApiClientImpl implements ReceiveCurrencyApiClient {
                 .block();
     }
 }
+
