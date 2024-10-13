@@ -4,6 +4,8 @@ package org.mediasoft.warehouse.db.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
+import org.mediasoft.warehouse.db.entity.enums.StatusEnum;
 
 import java.util.UUID;
 
@@ -34,7 +37,8 @@ public class OrderEntity {
     private CustomerEntity customerId;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
 
     @Column(name = "delivery_address")
     private String deliveryAddress;
