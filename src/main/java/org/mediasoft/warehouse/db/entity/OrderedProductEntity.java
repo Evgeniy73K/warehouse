@@ -1,21 +1,17 @@
 package org.mediasoft.warehouse.db.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
-
+import org.mediasoft.warehouse.db.entity.keys.OrderedProductId;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -23,19 +19,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "ordered_product")
+@Builder
 public class OrderedProductEntity {
-
-    @Id
-    @UuidGenerator
-    private UUID id;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
-    private OrderEntity order;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-    private ProductEntity product;
+    @EmbeddedId
+    private OrderedProductId id;
 
     @Column(name = "qty", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantity;

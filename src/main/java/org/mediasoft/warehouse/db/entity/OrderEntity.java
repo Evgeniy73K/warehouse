@@ -11,10 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
 import org.mediasoft.warehouse.db.entity.enums.StatusEnum;
 
 import java.util.UUID;
@@ -24,21 +24,23 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "order")
+@Builder
+@Table(name="\"order\"")
 public class OrderEntity {
 
     @Id
-    @UuidGenerator
     @Column(name = "id")
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private CustomerEntity customerId;
+    private CustomerEntity customer;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private StatusEnum status;
+    @Builder.Default
+    private StatusEnum status = StatusEnum.CREATED;
 
     @Column(name = "delivery_address")
     private String deliveryAddress;

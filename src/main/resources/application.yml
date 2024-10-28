@@ -6,15 +6,12 @@ spring:
     driver-class-name: org.postgresql.Driver
     log:
       level: debug
-    logging:
-      level:
-        org.springframework.cache: debug
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         ddl-auto: validate
-        show_sql: false
+        show_sql: true
         format_sql: false
         use_sql_comments: false
     show-sql: true
@@ -23,11 +20,11 @@ spring:
     change-log: classpath:db/changelog/db.master.xml
     enabled: true
 scheduler:
-  timing: 100
+  timing: 10000000
   pricePercentage: 30
   enabled: false
   optimization: false
-  clearCacheTiming: 10000
+  clearCacheTiming: 100000000
 
 currency-service:
   host: http://localhost:8081

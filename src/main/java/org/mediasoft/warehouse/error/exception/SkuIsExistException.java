@@ -1,4 +1,4 @@
-package org.mediasoft.warehouse.exceptions;
+package org.mediasoft.warehouse.error.exception;
 
 import lombok.Getter;
 
