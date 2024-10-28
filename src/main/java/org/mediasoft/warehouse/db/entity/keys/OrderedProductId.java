@@ -1,14 +1,17 @@
 package org.mediasoft.warehouse.db.entity.keys;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.mediasoft.warehouse.db.entity.OrderEntity;
+import org.mediasoft.warehouse.db.entity.ProductEntity;
 
-import java.util.UUID;
 
 @Embeddable
 @Getter
@@ -19,10 +22,12 @@ public class OrderedProductId {
 
 
     @NotNull
-    @Column(name = "order_id")
-    private UUID orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private OrderEntity orderId;
 
     @NotNull
-    @Column(name = "product_id")
-    private UUID productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private ProductEntity product;
 }

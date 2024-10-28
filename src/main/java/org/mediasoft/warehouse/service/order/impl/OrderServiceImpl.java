@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
         List<ProductEntity> rollbackProducts = new ArrayList<>();
 
         orderedProductList.forEach(o -> {
-            productRepository.findById(o.getId().getProductId())
+            productRepository.findById(o.getId().getProduct().getId())
                     .ifPresent(p -> {
                         p.setQty(p.getQty().add(o.getQuantity()));
                         rollbackProducts.add(p);
@@ -183,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
 
-            var orderedProductId = new OrderedProductId(orderEntity.getId(), product.getId());
+            var orderedProductId = new OrderedProductId(orderEntity, productEntity);
 
             if (isUpdate) {
                 orderedProductRepository.findById(orderedProductId).ifPresent(orderedProductEntity -> {
