@@ -56,8 +56,8 @@ public class ProductEntity {
     @Column(name = "last_qty_changed")
     private LocalDateTime lastQtyChanged;
 
-    @Column(name = "is_available", nullable = true, columnDefinition = "boolean default true")
-    private Boolean isAvailable;
+    @Column(name = "is_available", columnDefinition = "boolean default true")
+    private Boolean isAvailable = true;
 }
 
 
