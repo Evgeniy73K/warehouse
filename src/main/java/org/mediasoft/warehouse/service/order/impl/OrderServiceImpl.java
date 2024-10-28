@@ -61,7 +61,8 @@ public class OrderServiceImpl implements OrderService {
 
         saveOrUpdateOrder(products, productsEntities, orderEntity, false);
 
-        log.info("ЗАКАЗ СОЗДАН!!!!!!!!!!");
+
+        log.info("ЗАКАЗ СОЗДАН!!!!!!!!!! {}", orderEntity.getId());
     }
 
     @Override
@@ -84,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
         var productsEntities = new HashSet<>(orderValidator.validateProduct(products));
 
         saveOrUpdateOrder(products, productsEntities, orderEntity, true);
-        log.info("ЗАКАЗ ОБНОВЛЕН!!!!!!!!!!!");
+        log.info("ЗАКАЗ ОБНОВЛЕН!!!!!!!!!! {}", orderEntity.getId());
     }
 
     @Override
@@ -122,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(orderEntity);
         productRepository.saveAll(rollbackProducts);
 
-        log.info("ЗАКАЗ УДАЛЕН!!!!!!!!!!");
+        log.info("ЗАКАЗ ОТМЕНЕН!!!!!!!!!! {}", orderEntity.getId());
 
     }
 
@@ -141,6 +142,8 @@ public class OrderServiceImpl implements OrderService {
 
         orderEntity.setStatus(changeStatusDto.getStatus());
         orderRepository.save(orderEntity);
+
+        log.info("СТАТУС ЗАКАЗА ИЗМЕНЕН!!!!!!!!!! {}", orderEntity.getId());
     }
 
     @Override
