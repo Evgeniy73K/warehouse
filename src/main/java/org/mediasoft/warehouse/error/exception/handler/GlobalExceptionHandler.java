@@ -109,12 +109,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductValidationException.class)
     public ResponseEntity<List<ErrorDetail>> handleProductValidationException(ProductValidationException e) {
 
-        var error = addErrorDetail(e.getNotFoundProducts(), e, PRODUCT_NOT_FOUND.getMessage());
-        var error1 = addErrorDetail(e.getUnAvailableProducts(), e, PRODUCT_NOT_AVAILABLE.getMessage());
-        var error2 = addErrorDetailFromMap(e.getNotEnoughProductMap(), e, NOT_ENOUGH_QTY.getMessage());
+        var productNotFoundError = addErrorDetail(e.getNotFoundProducts(), e, PRODUCT_NOT_FOUND.getMessage());
+        var productNotAvailableError = addErrorDetail(e.getUnAvailableProducts(), e, PRODUCT_NOT_AVAILABLE.getMessage());
+        var notEnoughQtyError = addErrorDetailFromMap(e.getNotEnoughProductMap(), e, NOT_ENOUGH_QTY.getMessage());
 
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List.of(error, error1, error2));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List.of(productNotFoundError, productNotAvailableError, notEnoughQtyError));
     }
 
     @ExceptionHandler(BusinessException.class)

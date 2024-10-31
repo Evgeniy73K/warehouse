@@ -28,14 +28,14 @@ public class OrderController {
     private final OrderServiceImpl orderService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void createOrder(@RequestBody @Valid RequestCreateOrderDto requestCreateOrderDto) {
 
         orderService.createOrder(OrderMapper.INSTANCE.toCreateOrderDto(requestCreateOrderDto));
     }
 
     @PatchMapping("{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateOrder(@RequestBody @Valid RequestUpdateOrderDto requestUpdateOrderDto, @PathVariable("id") UUID id) {
         orderService.updateOrder(OrderMapper.INSTANCE.toUpdateOrderDto(requestUpdateOrderDto), id);
     }

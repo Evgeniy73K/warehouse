@@ -58,7 +58,7 @@ public class OrderValidator {
                 .toList();
 
         var notEnoughProductsMaps = productEntities.stream()
-                .filter(p -> p.getIsAvailable().equals(true))
+                .filter(ProductEntity::getIsAvailable)
                 .flatMap(entity -> productDtos.stream()
                         .filter(dto -> dto.getId().equals(entity.getId()))
                         .map(dto -> entity.getQty().subtract(dto.getQty()).compareTo(BigDecimal.ZERO) < 0

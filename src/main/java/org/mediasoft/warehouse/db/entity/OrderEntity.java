@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 import org.mediasoft.warehouse.db.entity.enums.StatusEnum;
 
 import java.util.UUID;
@@ -31,8 +33,9 @@ public class OrderEntity {
 
     @Id
     @Column(name = "id")
-    @Builder.Default
-    private UUID id = UUID.randomUUID();
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
+    @GeneratedValue
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private CustomerEntity customer;
