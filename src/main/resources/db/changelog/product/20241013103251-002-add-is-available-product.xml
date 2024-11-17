@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="add-is-available-column" author="e.v.karabaev">
+        <sqlFile path="sql/add-is-available-column-product.sql" splitStatements="false" relativeToChangelogFile="true"/>
+    </changeSet>
+</databaseChangeLog>

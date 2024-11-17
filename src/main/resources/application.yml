@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    log:
+      level: debug
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: validate
+        show_sql: true
+        format_sql: false
+        use_sql_comments: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/db.master.xml
+    enabled: true
+scheduler:
+  timing: 10000000
+  pricePercentage: 30
+  enabled: false
+  optimization: false
+  clearCacheTiming: 100000000
+
+currency-service:
+  host: http://localhost:8081
+  methods:
+    get-currency: /api/v1/currencies
+  file: src/main/resources/currency/currRate.json
