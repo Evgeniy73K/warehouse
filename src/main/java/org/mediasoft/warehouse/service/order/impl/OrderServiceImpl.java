@@ -1,12 +1,11 @@
 package org.mediasoft.warehouse.service.order.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mediasoft.warehouse.db.entity.OrderEntity;
 import org.mediasoft.warehouse.db.entity.OrderedProductEntity;
 import org.mediasoft.warehouse.db.entity.ProductEntity;
-import org.mediasoft.warehouse.db.entity.enums.StatusEnum;
+import org.mediasoft.warehouse.db.entity.enums.OrderStatusEnum;
 import org.mediasoft.warehouse.db.entity.keys.OrderedProductId;
 import org.mediasoft.warehouse.db.projection.OrderSummary;
 import org.mediasoft.warehouse.db.repository.OrderRepository;
@@ -19,7 +18,7 @@ import org.mediasoft.warehouse.service.order.dto.CreateOrderDto;
 import org.mediasoft.warehouse.service.order.dto.GetOrderDto;
 import org.mediasoft.warehouse.service.order.dto.ProductSummaryDto;
 import org.mediasoft.warehouse.service.order.dto.UpdateOrderDto;
-import org.mediasoft.warehouse.service.order.utils.OrderValidator;
+import org.mediasoft.warehouse.service.order.utils.OrderDataGetter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +41,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderedProductRepository orderedProductRepository;
-    private final OrderValidator orderValidator;
-    private final HttpServletRequest request;
-    private final static String HEADER_CUSTOMER_ID = "customer_id";
+    private final OrderDataGetter orderDataGetter;
 
     @Override
     @Transactional
-    public void createOrder(CreateOrderDto createOrderDto) {
-        var customerId = Long.parseLong(request.getHeader(HEADER_CUSTOMER_ID));
-        var customer = orderValidator.validateUser(customerId);
+    public void createOrder(CreateOrderDto createOrderDto, Long customerId) {
+        var customer = orderDataGetter.getUser(customerId);
         var products = createOrderDto.getProducts();
-        var productsEntities = new HashSet<>(orderValidator.validateProduct(products));
+        var productsEntities = new HashSet<>(orderDataGetter.getProducts(products)); //возможно нужно переиминовать и вынести в приватный метод в класс
 
         var orderEntity = OrderEntity.builder()
                 .deliveryAddress(createOrderDto.getDeliveryAddress())
@@ -67,22 +63,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void updateOrder(UpdateOrderDto updateOrderDto, UUID orderId) {
-        if (request.getHeader(HEADER_CUSTOMER_ID) == null) throw new BusinessException();
+    public void updateOrder(UpdateOrderDto updateOrderDto, UUID orderId, Long customerId) {
+        if (customerId == null) throw new BusinessException();
 
         var orderEntity = orderRepository.findById(orderId).stream()
                 .findFirst()
                 .orElseThrow(
                         () -> new NoSuchElementException(ORDER_NOT_FOUND.getMessage()));
-        if (!orderEntity.getCustomer().getId().toString().equals(request.getHeader(HEADER_CUSTOMER_ID)))
+        if (!orderEntity.getCustomer().getId().equals(customerId))
             throw new BusinessException();
 
-        if (!orderEntity.getStatus().equals(StatusEnum.CREATED)) {
+        if (!orderEntity.getStatus().equals(OrderStatusEnum.CREATED)) {
             throw new RuntimeException(IMPOSSIBLE_UPDATE_ORDER.getMessage());
         }
 
         var products = updateOrderDto.getProducts();
-        var productsEntities = new HashSet<>(orderValidator.validateProduct(products));
+        var productsEntities = new HashSet<>(orderDataGetter.getProducts(products));
 
         saveOrUpdateOrder(products, productsEntities, orderEntity, true);
         log.info("ЗАКАЗ ОБНОВЛЕН!!!!!!!!!! {}", orderEntity.getId());
@@ -90,36 +86,37 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void deleteOrder(UUID orderId) {
-        if (request.getHeader(HEADER_CUSTOMER_ID) == null) throw new BusinessException();
+    public void deleteOrder(UUID orderId, Long customerId) {
+        if (customerId == null) throw new BusinessException();
 
         var orderEntity = orderRepository.findById(orderId).stream()
                 .findFirst()
                 .orElseThrow(
                         () -> new NoSuchElementException(ORDER_NOT_FOUND.getMessage()));
-        if (!orderEntity.getCustomer().getId().toString().equals(request.getHeader(HEADER_CUSTOMER_ID)))
+        if (!orderEntity.getCustomer().getId().equals(customerId))
             throw new BusinessException();
 
-        if (!orderEntity.getStatus().equals(StatusEnum.CREATED)) {
+        if (!orderEntity.getStatus().equals(OrderStatusEnum.CREATED)) {
             throw new RuntimeException(IMPOSSIBLE_DELETE_ORDER.getMessage());
         }
 
-        orderEntity.setStatus(StatusEnum.CANCELLED);
+        orderEntity.setStatus(OrderStatusEnum.CANCELLED);
 
         var orderedProductList = orderedProductRepository.findAllByOrderId(orderId);
 
 
-        List<ProductEntity> rollbackProducts = new ArrayList<>();
+        List<ProductEntity> rollbackProducts = orderedProductList.stream()
+                .map(o -> productRepository.findById(o.getId().getProduct().getId()) //merge
+                        .map(p -> {
+                                    p.setQty(p.getQty().add(o.getQuantity()));
+                                    return p;
+                                }
+                        )
+                        .orElseThrow(RuntimeException::new)
+                ).toList(); //Сделаю красиво
 
-        orderedProductList.forEach(o -> {
-            productRepository.findById(o.getId().getProduct().getId())
-                    .ifPresent(p -> {
-                        p.setQty(p.getQty().add(o.getQuantity()));
-                        rollbackProducts.add(p);
-                    });
-        });
 
-        orderedProductRepository.deleteAll(orderedProductList);
+        orderedProductRepository.deleteAll(orderedProductList); //лишние
         orderRepository.save(orderEntity);
         productRepository.saveAll(rollbackProducts);
 
@@ -128,8 +125,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmOrder(UUID orderId) {
-        var customerId = request.getHeader(HEADER_CUSTOMER_ID);
+    public void confirmOrder(UUID orderId, Long customerId) {
         //todo
 
     }
@@ -147,15 +143,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public GetOrderDto getOrder(UUID orderId) {
-        var customerId = request.getHeader(HEADER_CUSTOMER_ID);
+    public GetOrderDto getOrder(UUID orderId, Long customerId) {
         if (customerId == null) throw new BusinessException();
 
         var orderEntity = orderRepository.findById(orderId).orElseThrow(
                 () -> new NoSuchElementException(ORDER_NOT_FOUND.getMessage())
         );
 
-        if (!orderEntity.getCustomer().getId().toString().equals(customerId)) throw new BusinessException();
+        if (!orderEntity.getCustomer().getId().equals(customerId)) throw new BusinessException();
 
         var orderSummary = productRepository.getOrderDetailByOrderId(orderId);
 
@@ -186,9 +181,9 @@ public class OrderServiceImpl implements OrderService {
             var orderedProductId = new OrderedProductId(orderEntity, productEntity);
 
             if (isUpdate) {
-                orderedProductRepository.findById(orderedProductId).ifPresent(orderedProductEntity -> {
-                    productEntity.setQty(productEntity.getQty().add(orderedProductEntity.getQuantity()));
-                });
+                orderedProductRepository.findById(orderedProductId).ifPresent(orderedProductEntity ->
+                        productEntity.setQty(productEntity.getQty().add(orderedProductEntity.getQuantity()))
+                );
             }
 
             var orderedProductEntity = OrderedProductEntity.builder()

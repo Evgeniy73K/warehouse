@@ -14,7 +14,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,11 +23,11 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class OrderValidator {
+public class OrderDataGetter {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
 
-    public CustomerEntity validateUser(Long userId) {
+    public CustomerEntity getUser(Long userId) {
         return customerRepository.findById(userId)
                 .map(customerEntity -> {
                     if (!customerEntity.getIsActive()) {
@@ -39,11 +38,11 @@ public class OrderValidator {
                 .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public List<ProductEntity> validateProduct(List<ProductSummaryDto> productDtos) {
+    public List<ProductEntity> getProducts(List<ProductSummaryDto> productDtos) {
 
-        List<UUID> productIds = new ArrayList<>(productDtos.stream()
+        List<UUID> productIds = productDtos.stream()
                 .map(ProductSummaryDto::getId)
-                .toList());
+                .toList();
 
         List<ProductEntity> productEntities = productRepository.findAllById(productIds);
 
@@ -57,7 +56,7 @@ public class OrderValidator {
                         .noneMatch(p -> p.getId().equals(productId)))
                 .toList();
 
-        var notEnoughProductsMaps = productEntities.stream()
+        var notEnoughProductsMaps = productEntities.stream() //entity to hashMap
                 .filter(ProductEntity::getIsAvailable)
                 .flatMap(entity -> productDtos.stream()
                         .filter(dto -> dto.getId().equals(entity.getId()))

@@ -8,15 +8,15 @@ import org.mediasoft.warehouse.service.order.dto.UpdateOrderDto;
 import java.util.UUID;
 
 public interface OrderService {
-    void createOrder(CreateOrderDto createOrderDto);
+    void createOrder(CreateOrderDto createOrderDto, Long customerId);
 
-    void updateOrder(UpdateOrderDto updateOrderDto, UUID orderId);
+    void updateOrder(UpdateOrderDto updateOrderDto, UUID orderId, Long customerId);
 
-    void deleteOrder(UUID orderId);
+    void deleteOrder(UUID orderId, Long customerId);
 
-    void confirmOrder(UUID orderId);
+    void confirmOrder(UUID orderId, Long customerId);
 
     void changeStatus(UUID orderId, ChangeStatusDto changeStatusDto);
 
-    GetOrderDto getOrder(UUID orderId);
+    GetOrderDto getOrder(UUID orderId, Long customerId);
 }
