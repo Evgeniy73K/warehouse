@@ -1,0 +1,8 @@
+CREATE SEQUENCE IF NOT EXISTS customerid;
+
+CREATE TABLE IF NOT EXISTS customer (
+    id BIGINT PRIMARY KEY NOT NULL DEFAULT nextval('customerid'),
+    login VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(20) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true
+    );

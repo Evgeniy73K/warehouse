@@ -2,5 +2,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <include file="/db/changelog/product/001-create-table-product.xml"/>
+    <include file="/db/changelog/product/20240813143251-001-create-table-product.xml"/>
+    <include file="/db/changelog/product/20241013103251-002-add-is-available-product.xml"/>
+    <include file="/db/changelog/customer/20241012123251-001-create-table-customer.xml"/>
+    <include file="/db/changelog/order/20241013133251-001-create-table-order.xml"/>
+    <include file="/db/changelog/order/20241013143251-002-create-table-ordered-product.xml"/>
 </databaseChangeLog>

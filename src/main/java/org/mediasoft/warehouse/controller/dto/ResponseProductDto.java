@@ -21,6 +21,7 @@ public class ResponseProductDto {
     private BigDecimal price;
     private BigDecimal qty;
     private LocalDateTime insertedAt;
-    private LocalDateTime lastUpdated;
-    private CurrencyEnum currency;
+    private LocalDateTime last_qty_changed;
+    @Builder.Default
+    private CurrencyEnum currency = CurrencyEnum.RUB;
 }

@@ -19,6 +19,7 @@ public class CurrencyFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         if(request.getHeader("currency") == null && httpSession.getAttribute("currency") == null) {
             httpSession.setAttribute("currency", CurrencyEnum.RUB);
 
@@ -27,6 +28,8 @@ public class CurrencyFilter extends OncePerRequestFilter {
         } else if(request.getHeader("currency") != null && httpSession.getAttribute("currency") != request.getHeader("currency")) {
             httpSession.setAttribute("currency", CurrencyEnum.fromValue(request.getHeader("currency")));
         }
+
+
 
         filterChain.doFilter(request, response);
     }

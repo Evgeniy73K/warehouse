@@ -14,7 +14,7 @@ import org.mediasoft.warehouse.db.entity.ProductEntity;
 import org.mediasoft.warehouse.db.entity.enums.Category;
 import org.mediasoft.warehouse.db.repository.ProductRepository;
 import org.mediasoft.warehouse.controller.dto.ResponseProductDto;
-import org.mediasoft.warehouse.exceptions.SkuIsExistException;
+import org.mediasoft.warehouse.error.exception.SkuIsExistException;
 import org.mediasoft.warehouse.service.dto.CreateProductDto;
 import org.mediasoft.warehouse.service.dto.CriteriaDto;
 import org.mediasoft.warehouse.service.dto.UpdateProductDto;
