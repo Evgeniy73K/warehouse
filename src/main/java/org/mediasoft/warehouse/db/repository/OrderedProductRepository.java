@@ -15,4 +15,7 @@ public interface OrderedProductRepository extends JpaRepository<OrderedProductEn
 
     @Query(nativeQuery = true, value = "SELECT * FROM ordered_product WHERE order_id = :id")
     List<OrderedProductEntity> findAllByOrderId(@Param("id") UUID id);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM ordered_product WHERE product_id = :productId")
+    List<OrderedProductEntity> findAllByProductId(@Param("productId") UUID productId);
 }

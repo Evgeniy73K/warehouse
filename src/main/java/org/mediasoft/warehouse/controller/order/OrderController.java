@@ -2,11 +2,13 @@ package org.mediasoft.warehouse.controller.order;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.mediasoft.warehouse.controller.order.dto.OrderInfoDto;
 import org.mediasoft.warehouse.controller.order.dto.RequestCreateOrderDto;
 import org.mediasoft.warehouse.controller.order.dto.RequestUpdateOrderDto;
 import org.mediasoft.warehouse.mappers.OrderMapper;
 import org.mediasoft.warehouse.service.order.dto.ChangeStatusDto;
 import org.mediasoft.warehouse.service.order.dto.GetOrderDto;
+import org.mediasoft.warehouse.service.order.impl.OrderInfoServiceImpl;
 import org.mediasoft.warehouse.service.order.impl.OrderServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,6 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderServiceImpl orderService;
+    private final OrderInfoServiceImpl orderInfoService;
 
 
     @PostMapping
@@ -56,5 +61,10 @@ public class OrderController {
     @GetMapping("{id}")
     public GetOrderDto getOrder(@PathVariable("id") UUID id, @RequestHeader("customer_id") Long customerId) {
         return orderService.getOrder(id, customerId);
+    }
+
+    @GetMapping("info/{productId}")
+    public HashMap<UUID, List<OrderInfoDto>> getOrderInfo(@PathVariable("productId") UUID productId) {
+        return orderInfoService.getOrderInfo(productId);
     }
 }

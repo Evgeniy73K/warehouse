@@ -31,3 +31,11 @@ currency-service:
   methods:
     get-currency: /api/v1/currencies
   file: src/main/resources/currency/currRate.json
+account-service:
+  host: http://localhost:8081
+  methods:
+    get-logins: /api/v1/login
+crm-service:
+  host: http://localhost:8081
+  methods:
+    get-inn: /api/v1/crm
