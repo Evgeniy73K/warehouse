@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,10 +47,22 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         orderedProductEntitiesMap.forEach((key, value) -> loginSetList.add(value.getId().getOrderId().getCustomer().getLogin()));
 
-        final List<Map<String, String>> accountList = accountServiceApiClient.getLogins(loginSetList);
-        final List<Map<String, String>> innList = crmServiceApiClient.getInnList(loginSetList);
+        List<Map<String, String>> accountList;
+        List<Map<String, String>> innList;
 
+        var accountListFeature = CompletableFuture.supplyAsync(() -> accountServiceApiClient.getLogins(loginSetList));
+        var accountInnFeature = CompletableFuture.supplyAsync(() -> crmServiceApiClient.getInnList(loginSetList));
+        try {
+            CompletableFuture.allOf(accountListFeature, accountInnFeature).get(15, TimeUnit.SECONDS);
+            accountList = accountListFeature.get();
+            innList = accountInnFeature.get();
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
 
+        if(accountList.isEmpty() || innList.isEmpty()) {
+            throw new RuntimeException("accountList or innlist is empty");
+        }
         orderedProductEntitiesMap.forEach((key, value) -> {
             var customer = value.getId().getOrderId().getCustomer();
             var order = value.getId().getOrderId();
