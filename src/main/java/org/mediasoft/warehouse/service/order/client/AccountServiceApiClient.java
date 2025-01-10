@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class AccountServiceApiClient {
     @Value("${account-service.methods.get-logins}")
     private String uri;
 
-    public List<Map<String, String>> getLogins(Set<String> logins) {
+    public CompletableFuture<List<Map<String, String>>> getLogins(Set<String> logins) {
         return webClientConfiguration
             .accountWebClientConfiguration()
             .post()
@@ -28,7 +29,7 @@ public class AccountServiceApiClient {
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<Map<String, String>>>() {
             })
-            .block();
+            .toFuture();
     }
 
 }

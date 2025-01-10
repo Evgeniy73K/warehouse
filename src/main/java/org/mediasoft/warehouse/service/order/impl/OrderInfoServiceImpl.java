@@ -50,8 +50,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         List<Map<String, String>> accountList;
         List<Map<String, String>> innList;
 
-        var accountListFeature = CompletableFuture.supplyAsync(() -> accountServiceApiClient.getLogins(loginSetList));
-        var accountInnFeature = CompletableFuture.supplyAsync(() -> crmServiceApiClient.getInnList(loginSetList));
+        var accountListFeature = accountServiceApiClient.getLogins(loginSetList);
+        var accountInnFeature = crmServiceApiClient.getInnList(loginSetList);
         try {
             CompletableFuture.allOf(accountListFeature, accountInnFeature).get(15, TimeUnit.SECONDS);
             accountList = accountListFeature.get();
@@ -60,7 +60,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             throw new RuntimeException(e);
         }
 
-        if(accountList.isEmpty() || innList.isEmpty()) {
+        if (accountList.isEmpty() || innList.isEmpty()) {
             throw new RuntimeException("accountList or innlist is empty");
         }
         orderedProductEntitiesMap.forEach((key, value) -> {

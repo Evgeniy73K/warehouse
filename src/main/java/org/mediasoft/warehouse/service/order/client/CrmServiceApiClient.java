@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class CrmServiceApiClient {
     @Value("${crm-service.methods.get-inn}")
     private String uri;
 
-    public List<Map<String, String>> getInnList(Set<String> logins) {
+    public CompletableFuture<List<Map<String, String>>> getInnList(Set<String> logins) {
         return webClientConfiguration
             .crmWebClientConfiguration()
             .post()
@@ -27,7 +28,6 @@ public class CrmServiceApiClient {
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<Map<String, String>>>() {
             })
-            .block();
+            .toFuture();
     }
-
 }
