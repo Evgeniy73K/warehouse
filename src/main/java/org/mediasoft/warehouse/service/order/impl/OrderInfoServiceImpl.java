@@ -42,7 +42,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         final Map<UUID, OrderedProductEntity> orderedProductEntitiesMap = orderedProductRepository.findAllByProductId(productId)
             .stream()
-            .filter(p -> p.getId().getOrderId().getStatus().equals(CREATED) || equals(CONFIRMED))
+            .filter(p -> p.getId().getOrderId().getStatus().equals(CONFIRMED) || p.getId().getOrderId().getStatus().equals(CREATED))
             .collect(Collectors.toMap(p -> p.getId().getOrderId().getId(), Function.identity()));
 
         orderedProductEntitiesMap.forEach((key, value) -> loginSetList.add(value.getId().getOrderId().getCustomer().getLogin()));
