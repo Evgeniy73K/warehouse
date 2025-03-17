@@ -43,6 +43,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.0")
+    implementation("org.springframework.kafka:spring-kafka:3.3.2")
+
 
 
 }

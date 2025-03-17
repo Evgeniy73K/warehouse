@@ -6,6 +6,7 @@ import org.mediasoft.warehouse.controller.order.dto.RequestCreateOrderDto;
 import org.mediasoft.warehouse.controller.order.dto.RequestUpdateOrderDto;
 import org.mediasoft.warehouse.mappers.OrderMapper;
 import org.mediasoft.warehouse.service.order.dto.ChangeStatusDto;
+import org.mediasoft.warehouse.service.order.dto.CreateOrderDto;
 import org.mediasoft.warehouse.service.order.dto.GetOrderDto;
 import org.mediasoft.warehouse.service.order.impl.OrderServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -33,14 +34,18 @@ public class OrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void createOrder(@RequestBody @Valid RequestCreateOrderDto requestCreateOrderDto,
                             @RequestHeader("customer_id") Long customerId) {
-        orderService.createOrder(OrderMapper.INSTANCE.toCreateOrderDto(requestCreateOrderDto), customerId);
+        final CreateOrderDto createOrderDto = OrderMapper.INSTANCE.toCreateOrderDto(requestCreateOrderDto);
+
+        orderService.createOrder(createOrderDto.getProducts(), createOrderDto.getDeliveryAddress(), customerId);
     }
 
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateOrder(@RequestBody @Valid RequestUpdateOrderDto requestUpdateOrderDto, @PathVariable("id") UUID id,
                             @RequestHeader("customer_id") Long customerId) {
-        orderService.updateOrder(OrderMapper.INSTANCE.toUpdateOrderDto(requestUpdateOrderDto), id, customerId);
+        var products = OrderMapper.INSTANCE.toUpdateOrderDto(requestUpdateOrderDto).getProducts();
+
+        orderService.updateOrder(products, id, customerId);
     }
 
     @DeleteMapping("{id}")
@@ -50,7 +55,7 @@ public class OrderController {
 
     @PatchMapping("{id}/status")
     public void changeStatus(@PathVariable("id") UUID id, @RequestBody ChangeStatusDto changeStatusDto) {
-        orderService.changeStatus(id, changeStatusDto);
+        orderService.changeStatus(id, changeStatusDto.getStatus());
     }
 
     @GetMapping("{id}")

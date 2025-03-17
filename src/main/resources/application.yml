@@ -26,6 +26,12 @@ scheduler:
   optimization: false
   clearCacheTiming: 100000000
 
+kafka-consumer:
+  host: localhost:9092
+  groupId: test123
+  topic: order-topic
+
+
 currency-service:
   host: http://localhost:8081
   methods:

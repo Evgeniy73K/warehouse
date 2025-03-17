@@ -14,8 +14,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mediasoft.warehouse.Test.ENROLL;
+
 @RequiredArgsConstructor
 class WarehouseApplicationTests {
+    String test = "ENROLL";
     private final EasyRandom generator = new EasyRandom();
 
     ProductRepository productRepository;
@@ -24,10 +27,9 @@ class WarehouseApplicationTests {
 
     @Test
     void test() {
-        BigDecimal a = BigDecimal.valueOf(-510);
-
-        System.out.println(a.compareTo(BigDecimal.ZERO) > 0);
-        System.out.println(a.compareTo(BigDecimal.ZERO) >= 0);
+        System.out.println(test.contains(ENROLL.name()));
+        System.out.println(test.contains(ENROLL.toString()));
+        System.out.println();
 
 
 

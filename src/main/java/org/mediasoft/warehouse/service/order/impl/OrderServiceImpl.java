@@ -19,6 +19,7 @@ import org.mediasoft.warehouse.service.order.dto.GetOrderDto;
 import org.mediasoft.warehouse.service.order.dto.ProductSummaryDto;
 import org.mediasoft.warehouse.service.order.dto.UpdateOrderDto;
 import org.mediasoft.warehouse.service.order.utils.OrderDataGetter;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,25 +46,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void createOrder(CreateOrderDto createOrderDto, Long customerId) {
+    public void createOrder(List<ProductSummaryDto> products, String deliveryAddress, Long customerId) {
         var customer = orderDataGetter.getUser(customerId);
-        var products = createOrderDto.getProducts();
-        var productsEntities = new HashSet<>(orderDataGetter.getProducts(products)); //возможно нужно переиминовать и вынести в приватный метод в класс
+        var productsEntities = new HashSet<>(orderDataGetter.getProducts(products));
 
         var orderEntity = OrderEntity.builder()
-                .deliveryAddress(createOrderDto.getDeliveryAddress())
+                .deliveryAddress(deliveryAddress)
                 .customer(customer)
                 .build();
 
         saveOrUpdateOrder(products, productsEntities, orderEntity, false);
-
 
         log.info("ЗАКАЗ СОЗДАН!!!!!!!!!! {}", orderEntity.getId());
     }
 
     @Override
     @Transactional
-    public void updateOrder(UpdateOrderDto updateOrderDto, UUID orderId, Long customerId) {
+    public void updateOrder(List<ProductSummaryDto> products, UUID orderId, Long customerId) {
         if (customerId == null) throw new BusinessException();
 
         var orderEntity = orderRepository.findById(orderId).stream()
@@ -77,7 +76,6 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException(IMPOSSIBLE_UPDATE_ORDER.getMessage());
         }
 
-        var products = updateOrderDto.getProducts();
         var productsEntities = new HashSet<>(orderDataGetter.getProducts(products));
 
         saveOrUpdateOrder(products, productsEntities, orderEntity, true);
@@ -131,12 +129,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void changeStatus(UUID orderId, ChangeStatusDto changeStatusDto) {
+    public void changeStatus(UUID orderId, OrderStatusEnum orderStatusEnum) {
         var orderEntity = orderRepository.findById(orderId).orElseThrow(
                 () -> new NoSuchElementException(ORDER_NOT_FOUND.getMessage())
         );
 
-        orderEntity.setStatus(changeStatusDto.getStatus());
+        orderEntity.setStatus(orderStatusEnum);
         orderRepository.save(orderEntity);
 
         log.info("СТАТУС ЗАКАЗА ИЗМЕНЕН!!!!!!!!!! {}", orderEntity.getId());
